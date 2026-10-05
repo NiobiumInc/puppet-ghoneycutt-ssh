@@ -1,0 +1,10 @@
+{
+  "curations": {
+    "puppet-module-nsswitch": {
+      "license": "UNKNOWN",
+      "reviewed": null,
+      "reviewer": null,
+      "note": "No license found at github.com/ghoneycutt/puppet-module-nsswitch"
+    }
+  }
+}
