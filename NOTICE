@@ -2,7 +2,7 @@ THIRD-PARTY SOFTWARE NOTICES AND INFORMATION
 ============================================================
 
 Project: puppet-ghoneycutt-ssh
-Generated: 2026-09-15
+Generated: 2026-10-05
 Tool: SCANOSS (snippet detection with License dataset)
 Components: 3
 
@@ -12,17 +12,11 @@ notices as required by those licenses.
 
 ------------------------------------------------------------
 
-WARNING: The following component(s) have no license information.
-These require manual review to determine licensing terms.
-
-  - puppet-module-nsswitch (https://github.com/ghoneycutt/puppet-module-nsswitch)
-
-------------------------------------------------------------
-
 LICENSE SUMMARY
 
   Apache-2.0: 1 component(s)
   MIT: 1 component(s)
+  UNKNOWN: 1 component(s)
 
 ------------------------------------------------------------
 
@@ -62,7 +56,7 @@ COMPONENT ATTRIBUTIONS
   PURL: pkg:github/ghoneycutt/puppet-module-nsswitch
   Copyright:
     Copyright (C) 2013-2019 Garrett Honeycutt <code@garretthoneycutt.com>
-  License: UNKNOWN — requires manual review
+  License: UNKNOWN
 
   puppet-module-ssh
   Version: v3.54.0
@@ -98,6 +92,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+--- UNKNOWN ---
+
+Full license text available at: https://spdx.org/licenses/UNKNOWN.html
 
 
 --- Apache-2.0 ---
