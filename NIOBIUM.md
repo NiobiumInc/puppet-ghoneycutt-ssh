@@ -1,7 +1,7 @@
 # Niobium fork of ghoneycutt-ssh 3.62.0
 
 This repository is Forge `ghoneycutt-ssh 3.62.0` (tag `3.62.0-upstream`, byte-identical
-to the Forge tarball) plus **one patch**: a `'22.04', '24.04'` arm in
+to the Forge tarball) plus **one patch**: a `'22.04', '24.04', '26.04'` arm in
 `manifests/init.pp`'s Ubuntu case, mirroring the `'20.04'` block's values. Upstream
 3.62.0 knows Ubuntu only up to 20.04 and `fail()`s on anything newer.
 
@@ -58,3 +58,10 @@ the `+` costs nothing; git accepts it in a tag name.
   its `checksums.json` still held the stock digest for `init.pp`: the module claimed to be
   pristine while carrying the patch (it#222).
 - `3.62.0+nb.2` — same code, honest metadata and checksums (what production pins)
+
+## 2026-10-09: 26.04
+
+`'26.04'` (resolute) joins the same arm, with the 24.04 values. Without it every
+Ubuntu 26.04 catalog fails (`Operating System : 26.04 not supported`), found by compiling a
+26.04 fact set for gollum (NiobiumInc/slurm#1211). OpenSSH on 26.04 is newer than the
+24.04 values were written against; `sshd -t` on the first 26.04 node is the check.

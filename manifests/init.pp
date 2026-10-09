@@ -291,7 +291,7 @@ class ssh (
           $default_sshd_use_pam                       = 'yes'
           $default_sshd_x11_forwarding                = 'yes'
         }
-        '22.04', '24.04': {
+        '22.04', '24.04', '26.04': {
           $default_service_hasstatus                  = true
           $default_ssh_config_forward_x11_trusted     = 'yes'
           $default_ssh_config_hash_known_hosts        = 'yes'
