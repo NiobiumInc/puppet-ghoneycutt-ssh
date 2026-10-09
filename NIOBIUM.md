@@ -57,7 +57,9 @@ the `+` costs nothing; git accepts it in a tag name.
 - `3.62.0-nb.1` — + the Ubuntu 22.04/24.04 arm. Its `metadata.json` still said `3.62.0` and
   its `checksums.json` still held the stock digest for `init.pp`: the module claimed to be
   pristine while carrying the patch (it#222).
-- `3.62.0+nb.2` — same code, honest metadata and checksums (what production pins)
+- `3.62.0+nb.2` — same code, honest metadata and checksums
+- `3.62.0+nb.3` — + `'26.04'` in the same arm (NiobiumInc/slurm#1211); also lists `NOTICE` and
+  `.scanoss-curations.json`, which org automation added to `main` without checksum entries
 
 ## 2026-10-09: 26.04
 
