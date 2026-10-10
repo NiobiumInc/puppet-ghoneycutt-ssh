@@ -60,6 +60,8 @@ the `+` costs nothing; git accepts it in a tag name.
 - `3.62.0+nb.2` — same code, honest metadata and checksums
 - `3.62.0+nb.3` — + `'26.04'` in the same arm (NiobiumInc/slurm#1211); also lists `NOTICE` and
   `.scanoss-curations.json`, which org automation added to `main` without checksum entries
+- `3.62.0+nb.4` — no stdlib functions that stdlib 9 removed: `functions/` reimplements the ten it
+  used, and the 112 calls use them (NiobiumInc/it#360). No catalog change.
 
 ## 2026-10-09: 26.04
 
@@ -67,3 +69,24 @@ the `+` costs nothing; git accepts it in a tag name.
 Ubuntu 26.04 catalog fails (`Operating System : 26.04 not supported`), found by compiling a
 26.04 fact set for gollum (NiobiumInc/slurm#1211). OpenSSH on 26.04 is newer than the
 24.04 values were written against; `sshd -t` on the first 26.04 node is the check.
+
+## 2026-10-09: stdlib 9 (nb.4)
+
+The control repo is moving to puppetlabs-stdlib 9 so its modules can run on Puppet/OpenVox 8
+(NiobiumInc/it#360). stdlib 9 removed 34 functions that Puppet core does not provide; this module
+called ten of them 112 times (`validate_re` 41, `validate_array` 19, `type3x` 14,
+`validate_absolute_path` 12, `validate_string` 11, `validate_bool` 6, `is_integer` 4,
+`validate_hash` 3, `validate_numeric` 1, `is_array` 1). Under stdlib 9.7.0 every Linux catalog
+failed at the first (`validate_absolute_path`, `init.pp:547`).
+
+`functions/*.pp` reimplements each as `ssh::<name>` with **stdlib 6.5's exact contract**, read
+from its source -- the lenient cases included: `validate_string` accepts undef, `is_integer` and
+`type3x` treat a digit String (`'22'`) as an integer, `validate_numeric` accepts numeric Strings
+and arrays. The calls were renamed mechanically, nothing else in `manifests/` changed. Checked
+against stdlib 6.5's own functions over 25 inputs (digit/float/negative/leading-zero strings,
+numbers, booleans, undef, arrays, hashes, POSIX/Windows/relative paths): 74 return values and 175
+pass/fail outcomes identical. These work on stdlib 6.5 and 9 alike, so the pin moves before the
+stdlib bump; `type3x` also no longer depends on Ruby's Bignum/Fixnum (gone in Ruby 3.2).
+
+Not in nb.4: the legacy facts and the String-to-Integer coercion that Puppet 8's strict mode
+rejects (`init.pp` ~497). Those are OpenVox 8 work for a separate release.

@@ -544,7 +544,7 @@ class ssh (
   }
 
   if $sshd_config_xauth_location_real != undef {
-    validate_absolute_path($sshd_config_xauth_location_real)
+    ssh::validate_absolute_path($sshd_config_xauth_location_real)
   }
 
   if $ssh_package_source == 'USE_DEFAULTS' {
@@ -554,7 +554,7 @@ class ssh (
   }
 
   if $ssh_package_source_real != undef {
-    validate_absolute_path($ssh_package_source_real)
+    ssh::validate_absolute_path($ssh_package_source_real)
   }
 
   if $ssh_package_adminfile == 'USE_DEFAULTS' {
@@ -564,7 +564,7 @@ class ssh (
   }
 
   if $ssh_package_adminfile_real != undef {
-    validate_absolute_path($ssh_package_adminfile_real)
+    ssh::validate_absolute_path($ssh_package_adminfile_real)
   }
 
   if $sshd_config_use_dns == 'USE_DEFAULTS' {
@@ -591,7 +591,7 @@ class ssh (
     $ssh_config_forward_x11_trusted_real = $ssh_config_forward_x11_trusted
   }
   if $ssh_config_forward_x11_trusted_real != undef {
-    validate_re($ssh_config_forward_x11_trusted_real, '^(yes|no)$', "ssh::ssh_config_forward_x11_trusted may be either 'yes' or 'no' and is set to <${ssh_config_forward_x11_trusted_real}>.")
+    ssh::validate_re($ssh_config_forward_x11_trusted_real, '^(yes|no)$', "ssh::ssh_config_forward_x11_trusted may be either 'yes' or 'no' and is set to <${ssh_config_forward_x11_trusted_real}>.")
   }
 
   if $sshd_gssapikeyexchange == 'USE_DEFAULTS' {
@@ -621,12 +621,12 @@ class ssh (
   if $ssh_config_include == 'USE_DEFAULTS' {
     $ssh_config_include_real = $default_ssh_config_include
   } else {
-    case type3x($ssh_config_include) {
+    case ssh::type3x($ssh_config_include) {
       'array': {
-        validate_array($ssh_config_include)
+        ssh::validate_array($ssh_config_include)
       }
       'string': {
-        validate_string($ssh_config_include)
+        ssh::validate_string($ssh_config_include)
       }
       default: {
         fail('ssh::ssh_config_include type must be a strting or array.')
@@ -638,9 +638,9 @@ class ssh (
   if $ssh_sendenv == 'USE_DEFAULTS' {
     $ssh_sendenv_real = $default_ssh_sendenv
   } else {
-    case type3x($ssh_sendenv) {
+    case ssh::type3x($ssh_sendenv) {
       'string': {
-        validate_re($ssh_sendenv, '^(true|false)$', "ssh::ssh_sendenv may be either 'true' or 'false' and is set to <${ssh_sendenv}>.")
+        ssh::validate_re($ssh_sendenv, '^(true|false)$', "ssh::ssh_sendenv may be either 'true' or 'false' and is set to <${ssh_sendenv}>.")
         $ssh_sendenv_real = str2bool($ssh_sendenv)
       }
       'boolean': {
@@ -655,9 +655,9 @@ class ssh (
   if $sshd_acceptenv == 'USE_DEFAULTS' {
     $sshd_acceptenv_real = $default_sshd_acceptenv
   } else {
-    case type3x($sshd_acceptenv) {
+    case ssh::type3x($sshd_acceptenv) {
       'string': {
-        validate_re($sshd_acceptenv, '^(true|false)$', "ssh::sshd_acceptenv may be either 'true' or 'false' and is set to <${sshd_acceptenv}>.")
+        ssh::validate_re($sshd_acceptenv, '^(true|false)$', "ssh::sshd_acceptenv may be either 'true' or 'false' and is set to <${sshd_acceptenv}>.")
         $sshd_acceptenv_real = str2bool($sshd_acceptenv)
       }
       'boolean': {
@@ -672,21 +672,21 @@ class ssh (
   if $sshd_config_hostkey == 'USE_DEFAULTS' {
     $sshd_config_hostkey_real = $default_sshd_config_hostkey
   } else {
-    validate_array($sshd_config_hostkey)
-    validate_absolute_path($sshd_config_hostkey)
+    ssh::validate_array($sshd_config_hostkey)
+    ssh::validate_absolute_path($sshd_config_hostkey)
     $sshd_config_hostkey_real = $sshd_config_hostkey
   }
 
   if $sshd_listen_address {
-    validate_array($sshd_listen_address)
+    ssh::validate_array($sshd_listen_address)
   }
 
   if $service_hasstatus == 'USE_DEFAULTS' {
     $service_hasstatus_real = $default_service_hasstatus
   } else {
-    case type3x($service_hasstatus) {
+    case ssh::type3x($service_hasstatus) {
       'string': {
-        validate_re($service_hasstatus, '^(true|false)$', "ssh::service_hasstatus must be 'true' or 'false' and is set to <${service_hasstatus}>.")
+        ssh::validate_re($service_hasstatus, '^(true|false)$', "ssh::service_hasstatus must be 'true' or 'false' and is set to <${service_hasstatus}>.")
         $service_hasstatus_real = str2bool($service_hasstatus)
       }
       'boolean': {
@@ -707,12 +707,12 @@ class ssh (
   if $sshd_config_include == 'USE_DEFAULTS' {
     $sshd_config_include_real = $default_sshd_config_include
   } else {
-    case type3x($sshd_config_include) {
+    case ssh::type3x($sshd_config_include) {
       'array': {
-        validate_array($sshd_config_include)
+        ssh::validate_array($sshd_config_include)
       }
       'string': {
-        validate_string($sshd_config_include)
+        ssh::validate_string($sshd_config_include)
       }
       default: {
         fail('ssh::sshd_config_include type must be a strting or array.')
@@ -760,44 +760,44 @@ class ssh (
 
   # validate params
   if $ssh_config_ciphers != undef {
-    validate_array($ssh_config_ciphers)
+    ssh::validate_array($ssh_config_ciphers)
   }
 
   if $sshd_config_ciphers != undef {
-    validate_array($sshd_config_ciphers)
+    ssh::validate_array($sshd_config_ciphers)
   }
 
   if $ssh_config_kexalgorithms != undef {
-    validate_array($ssh_config_kexalgorithms)
+    ssh::validate_array($ssh_config_kexalgorithms)
   }
 
   if $sshd_config_kexalgorithms != undef {
-    validate_array($sshd_config_kexalgorithms)
+    ssh::validate_array($sshd_config_kexalgorithms)
   }
 
   if $ssh_config_macs != undef {
-    validate_array($ssh_config_macs)
+    ssh::validate_array($ssh_config_macs)
   }
 
   if $sshd_config_macs != undef {
-    validate_array($sshd_config_macs)
+    ssh::validate_array($sshd_config_macs)
   }
 
   if $ssh_config_hash_known_hosts_real != undef {
-    validate_re($ssh_config_hash_known_hosts_real, '^(yes|no)$', "ssh::ssh_config_hash_known_hosts may be either 'yes', 'no' or 'unset' and is set to <${ssh_config_hash_known_hosts_real}>.")
+    ssh::validate_re($ssh_config_hash_known_hosts_real, '^(yes|no)$', "ssh::ssh_config_hash_known_hosts may be either 'yes', 'no' or 'unset' and is set to <${ssh_config_hash_known_hosts_real}>.")
   }
   if $sshd_config_permitemptypasswords != undef {
-    validate_re($sshd_config_permitemptypasswords, '^(yes|no)$', "ssh::sshd_config_permitemptypasswords may be either 'yes' or 'no' and is set to <${sshd_config_permitemptypasswords}>.")
+    ssh::validate_re($sshd_config_permitemptypasswords, '^(yes|no)$', "ssh::sshd_config_permitemptypasswords may be either 'yes' or 'no' and is set to <${sshd_config_permitemptypasswords}>.")
   }
   if $sshd_config_permituserenvironment != undef {
-    validate_re($sshd_config_permituserenvironment, '^(yes|no)$', "ssh::sshd_config_permituserenvironment may be either 'yes' or 'no' and is set to <${sshd_config_permituserenvironment}>.")
+    ssh::validate_re($sshd_config_permituserenvironment, '^(yes|no)$', "ssh::sshd_config_permituserenvironment may be either 'yes' or 'no' and is set to <${sshd_config_permituserenvironment}>.")
   }
   if $sshd_config_compression != undef {
-    validate_re($sshd_config_compression, '^(yes|no|delayed)$', "ssh::sshd_config_compression may be either 'yes', 'no' or 'delayed' and is set to <${sshd_config_compression}>.")
+    ssh::validate_re($sshd_config_compression, '^(yes|no|delayed)$', "ssh::sshd_config_compression may be either 'yes', 'no' or 'delayed' and is set to <${sshd_config_compression}>.")
   }
-  case type3x($sshd_config_port) {
+  case ssh::type3x($sshd_config_port) {
     'string': {
-      validate_re($sshd_config_port, '^\d+$', "ssh::sshd_config_port must be a valid number and is set to <${sshd_config_port}>.")
+      ssh::validate_re($sshd_config_port, '^\d+$', "ssh::sshd_config_port must be a valid number and is set to <${sshd_config_port}>.")
       $sshd_config_port_array = [ str2num($sshd_config_port) ]
     }
     'array': {
@@ -810,129 +810,129 @@ class ssh (
       fail('ssh:sshd_config_port must be a string, an integer or an array. ')
     }
   }
-  validate_numeric($sshd_config_port_array, 65535, 1)
+  ssh::validate_numeric($sshd_config_port_array, 65535, 1)
   if $sshd_kerberos_authentication != undef {
-    validate_re($sshd_kerberos_authentication, '^(yes|no)$', "ssh::sshd_kerberos_authentication may be either 'yes' or 'no' and is set to <${sshd_kerberos_authentication}>.")
+    ssh::validate_re($sshd_kerberos_authentication, '^(yes|no)$', "ssh::sshd_kerberos_authentication may be either 'yes' or 'no' and is set to <${sshd_kerberos_authentication}>.")
   }
-  validate_re($sshd_password_authentication, '^(yes|no)$', "ssh::sshd_password_authentication may be either 'yes' or 'no' and is set to <${sshd_password_authentication}>.")
-  validate_re($sshd_allow_tcp_forwarding, '^(yes|no)$', "ssh::sshd_allow_tcp_forwarding may be either 'yes' or 'no' and is set to <${sshd_allow_tcp_forwarding}>.")
-  validate_re($sshd_x11_forwarding, '^(yes|no)$', "ssh::sshd_x11_forwarding may be either 'yes' or 'no' and is set to <${sshd_x11_forwarding}>.")
-  validate_re($sshd_x11_use_localhost, '^(yes|no)$', "ssh::sshd_x11_use_localhost may be either 'yes' or 'no' and is set to <${sshd_x11_use_localhost}>.")
+  ssh::validate_re($sshd_password_authentication, '^(yes|no)$', "ssh::sshd_password_authentication may be either 'yes' or 'no' and is set to <${sshd_password_authentication}>.")
+  ssh::validate_re($sshd_allow_tcp_forwarding, '^(yes|no)$', "ssh::sshd_allow_tcp_forwarding may be either 'yes' or 'no' and is set to <${sshd_allow_tcp_forwarding}>.")
+  ssh::validate_re($sshd_x11_forwarding, '^(yes|no)$', "ssh::sshd_x11_forwarding may be either 'yes' or 'no' and is set to <${sshd_x11_forwarding}>.")
+  ssh::validate_re($sshd_x11_use_localhost, '^(yes|no)$', "ssh::sshd_x11_use_localhost may be either 'yes' or 'no' and is set to <${sshd_x11_use_localhost}>.")
   if $sshd_config_print_last_log != undef {
-    validate_re($sshd_config_print_last_log, '^(yes|no)$', "ssh::sshd_config_print_last_log may be either 'yes' or 'no' and is set to <${sshd_config_print_last_log}>.")
+    ssh::validate_re($sshd_config_print_last_log, '^(yes|no)$', "ssh::sshd_config_print_last_log may be either 'yes' or 'no' and is set to <${sshd_config_print_last_log}>.")
   }
   if $sshd_use_pam_real != undef {
-    validate_re($sshd_use_pam_real, '^(yes|no)$', "ssh::sshd_use_pam may be either 'yes' or 'no' and is set to <${sshd_use_pam_real}>.")
+    ssh::validate_re($sshd_use_pam_real, '^(yes|no)$', "ssh::sshd_use_pam may be either 'yes' or 'no' and is set to <${sshd_use_pam_real}>.")
   }
   if $sshd_config_serverkeybits_real != undef {
-    if is_integer($sshd_config_serverkeybits_real) == false { fail("ssh::sshd_config_serverkeybits must be an integer and is set to <${sshd_config_serverkeybits}>.") }
+    if ssh::is_integer($sshd_config_serverkeybits_real) == false { fail("ssh::sshd_config_serverkeybits must be an integer and is set to <${sshd_config_serverkeybits}>.") }
   }
   if $ssh_config_use_roaming_real != undef {
-    validate_re($ssh_config_use_roaming_real, '^(yes|no|unset)$', "ssh::ssh_config_use_roaming may be either 'yes', 'no' or 'unset' and is set to <${$ssh_config_use_roaming}>.")
+    ssh::validate_re($ssh_config_use_roaming_real, '^(yes|no|unset)$', "ssh::ssh_config_use_roaming may be either 'yes', 'no' or 'unset' and is set to <${$ssh_config_use_roaming}>.")
   }
-  if is_integer($sshd_client_alive_interval) == false { fail("ssh::sshd_client_alive_interval must be an integer and is set to <${sshd_client_alive_interval}>.") }
-  if is_integer($sshd_client_alive_count_max) == false { fail("ssh::sshd_client_alive_count_max must be an integer and is set to <${sshd_client_alive_count_max}>.") }
+  if ssh::is_integer($sshd_client_alive_interval) == false { fail("ssh::sshd_client_alive_interval must be an integer and is set to <${sshd_client_alive_interval}>.") }
+  if ssh::is_integer($sshd_client_alive_count_max) == false { fail("ssh::sshd_client_alive_count_max must be an integer and is set to <${sshd_client_alive_count_max}>.") }
 
   if $sshd_config_banner != 'none' {
-    validate_absolute_path($sshd_config_banner)
+    ssh::validate_absolute_path($sshd_config_banner)
   }
   if $sshd_banner_content != undef and $sshd_config_banner == 'none' {
     fail('ssh::sshd_config_banner must be set to be able to use sshd_banner_content.')
   }
 
-  validate_re($ssh_gssapiauthentication, '^(yes|no)$', "ssh::ssh_gssapiauthentication may be either 'yes' or 'no' and is set to <${ssh_gssapiauthentication}>.")
+  ssh::validate_re($ssh_gssapiauthentication, '^(yes|no)$', "ssh::ssh_gssapiauthentication may be either 'yes' or 'no' and is set to <${ssh_gssapiauthentication}>.")
 
   if $ssh_gssapidelegatecredentials != undef {
-    validate_re($ssh_gssapidelegatecredentials, '^(yes|no)$', "ssh::ssh_gssapidelegatecredentials may be either 'yes' or 'no' and is set to <${ssh_gssapidelegatecredentials}>.")
+    ssh::validate_re($ssh_gssapidelegatecredentials, '^(yes|no)$', "ssh::ssh_gssapidelegatecredentials may be either 'yes' or 'no' and is set to <${ssh_gssapidelegatecredentials}>.")
   }
 
-  validate_re($sshd_gssapiauthentication, '^(yes|no)$', "ssh::sshd_gssapiauthentication may be either 'yes' or 'no' and is set to <${sshd_gssapiauthentication}>.")
+  ssh::validate_re($sshd_gssapiauthentication, '^(yes|no)$', "ssh::sshd_gssapiauthentication may be either 'yes' or 'no' and is set to <${sshd_gssapiauthentication}>.")
 
   if $sshd_gssapikeyexchange_real != undef {
-    validate_re($sshd_gssapikeyexchange_real, '^(yes|no)$', "ssh::sshd_gssapikeyexchange may be either 'yes' or 'no' and is set to <${sshd_gssapikeyexchange_real}>.")
+    ssh::validate_re($sshd_gssapikeyexchange_real, '^(yes|no)$', "ssh::sshd_gssapikeyexchange may be either 'yes' or 'no' and is set to <${sshd_gssapikeyexchange_real}>.")
   }
 
   if $sshd_pamauthenticationviakbdint_real != undef {
-    validate_re($sshd_pamauthenticationviakbdint_real, '^(yes|no)$', "ssh::sshd_pamauthenticationviakbdint may be either 'yes' or 'no' and is set to <${sshd_pamauthenticationviakbdint_real}>.")
+    ssh::validate_re($sshd_pamauthenticationviakbdint_real, '^(yes|no)$', "ssh::sshd_pamauthenticationviakbdint may be either 'yes' or 'no' and is set to <${sshd_pamauthenticationviakbdint_real}>.")
   }
 
   if $sshd_gssapicleanupcredentials_real != undef {
-    validate_re($sshd_gssapicleanupcredentials_real, '^(yes|no)$', "ssh::sshd_gssapicleanupcredentials may be either 'yes' or 'no' and is set to <${sshd_gssapicleanupcredentials_real}>.")
+    ssh::validate_re($sshd_gssapicleanupcredentials_real, '^(yes|no)$', "ssh::sshd_gssapicleanupcredentials may be either 'yes' or 'no' and is set to <${sshd_gssapicleanupcredentials_real}>.")
   }
 
   if $ssh_strict_host_key_checking != undef {
-    validate_re($ssh_strict_host_key_checking, '^(yes|no|ask)$', "ssh::ssh_strict_host_key_checking may be 'yes', 'no' or 'ask' and is set to <${ssh_strict_host_key_checking}>.")
+    ssh::validate_re($ssh_strict_host_key_checking, '^(yes|no|ask)$', "ssh::ssh_strict_host_key_checking may be 'yes', 'no' or 'ask' and is set to <${ssh_strict_host_key_checking}>.")
   }
 
   if $ssh_config_proxy_command != undef {
-    validate_string($ssh_config_proxy_command)
+    ssh::validate_string($ssh_config_proxy_command)
   }
 
   if $ssh_enable_ssh_keysign != undef {
-    validate_re($ssh_enable_ssh_keysign, '^(yes|no)$', "ssh::ssh_enable_ssh_keysign may be either 'yes' or 'no' and is set to <${ssh_enable_ssh_keysign}>.")
+    ssh::validate_re($ssh_enable_ssh_keysign, '^(yes|no)$', "ssh::ssh_enable_ssh_keysign may be either 'yes' or 'no' and is set to <${ssh_enable_ssh_keysign}>.")
   }
 
   if $sshd_config_authkey_location != undef {
-    validate_string($sshd_config_authkey_location)
+    ssh::validate_string($sshd_config_authkey_location)
   }
 
   if $sshd_config_maxauthtries != undef {
-    if is_integer($sshd_config_maxauthtries) == false {
+    if ssh::is_integer($sshd_config_maxauthtries) == false {
       fail("ssh::sshd_config_maxauthtries must be a valid number and is set to <${sshd_config_maxauthtries}>.")
     }
   }
 
   if $sshd_config_maxstartups != undef {
-    validate_re($sshd_config_maxstartups,'^((\d+)|(\d+?:\d+?:\d+)?)$',
+    ssh::validate_re($sshd_config_maxstartups,'^((\d+)|(\d+?:\d+?:\d+)?)$',
       "ssh::sshd_config_maxstartups may be either an integer or three integers separated with colons, such as 10:30:100. Detected value is <${sshd_config_maxstartups}>.")
   }
 
   if $sshd_config_chrootdirectory != undef {
-    validate_absolute_path($sshd_config_chrootdirectory)
+    ssh::validate_absolute_path($sshd_config_chrootdirectory)
   }
 
   if $sshd_config_forcecommand != undef {
-    validate_string($sshd_config_forcecommand)
+    ssh::validate_string($sshd_config_forcecommand)
   }
 
   if $sshd_authorized_keys_command != undef {
-    validate_absolute_path($sshd_authorized_keys_command)
+    ssh::validate_absolute_path($sshd_authorized_keys_command)
   }
 
   if $sshd_authorized_keys_command_user != undef {
-    validate_string($sshd_authorized_keys_command_user)
+    ssh::validate_string($sshd_authorized_keys_command_user)
   }
 
   if $sshd_config_match != undef {
-    validate_hash($sshd_config_match)
+    ssh::validate_hash($sshd_config_match)
   }
 
   if $sshd_config_strictmodes != undef {
-    validate_re($sshd_config_strictmodes, '^(yes|no)$', "ssh::sshd_config_strictmodes may be either 'yes' or 'no' and is set to <${sshd_config_strictmodes}>.")
+    ssh::validate_re($sshd_config_strictmodes, '^(yes|no)$', "ssh::sshd_config_strictmodes may be either 'yes' or 'no' and is set to <${sshd_config_strictmodes}>.")
   }
   if $ssh_hostbasedauthentication != undef {
-    validate_re($ssh_hostbasedauthentication, '^(yes|no)$', "ssh::ssh_hostbasedauthentication may be either 'yes' or 'no' and is set to <${ssh_hostbasedauthentication}>.")
+    ssh::validate_re($ssh_hostbasedauthentication, '^(yes|no)$', "ssh::ssh_hostbasedauthentication may be either 'yes' or 'no' and is set to <${ssh_hostbasedauthentication}>.")
   }
 
-  validate_re($sshd_hostbasedauthentication, '^(yes|no)$', "ssh::sshd_hostbasedauthentication may be either 'yes' or 'no' and is set to <${sshd_hostbasedauthentication}>.")
+  ssh::validate_re($sshd_hostbasedauthentication, '^(yes|no)$', "ssh::sshd_hostbasedauthentication may be either 'yes' or 'no' and is set to <${sshd_hostbasedauthentication}>.")
 
   if $sshd_pubkeyacceptedkeytypes != undef {
-    validate_array($sshd_pubkeyacceptedkeytypes)
+    ssh::validate_array($sshd_pubkeyacceptedkeytypes)
   }
 
   if $sshd_config_authenticationmethods != undef {
-    validate_array($sshd_config_authenticationmethods)
+    ssh::validate_array($sshd_config_authenticationmethods)
   }
 
-  validate_re($sshd_pubkeyauthentication, '^(yes|no)$', "ssh::sshd_pubkeyauthentication may be either 'yes' or 'no' and is set to <${sshd_pubkeyauthentication}>.")
+  ssh::validate_re($sshd_pubkeyauthentication, '^(yes|no)$', "ssh::sshd_pubkeyauthentication may be either 'yes' or 'no' and is set to <${sshd_pubkeyauthentication}>.")
 
-  validate_re($sshd_ignoreuserknownhosts, '^(yes|no)$', "ssh::sshd_ignoreuserknownhosts may be either 'yes' or 'no' and is set to <${sshd_ignoreuserknownhosts}>.")
+  ssh::validate_re($sshd_ignoreuserknownhosts, '^(yes|no)$', "ssh::sshd_ignoreuserknownhosts may be either 'yes' or 'no' and is set to <${sshd_ignoreuserknownhosts}>.")
 
-  validate_re($sshd_ignorerhosts, '^(yes|no)$', "ssh::sshd_ignorerhosts may be either 'yes' or 'no' and is set to <${sshd_ignorerhosts}>.")
+  ssh::validate_re($sshd_ignorerhosts, '^(yes|no)$', "ssh::sshd_ignorerhosts may be either 'yes' or 'no' and is set to <${sshd_ignorerhosts}>.")
 
-  case type3x($hiera_merge) {
+  case ssh::type3x($hiera_merge) {
     'string': {
-      validate_re($hiera_merge, '^(true|false)$', "ssh::hiera_merge may be either 'true' or 'false' and is set to <${hiera_merge}>.")
+      ssh::validate_re($hiera_merge, '^(true|false)$', "ssh::hiera_merge may be either 'true' or 'false' and is set to <${hiera_merge}>.")
       $hiera_merge_real = str2bool($hiera_merge)
     }
     'boolean': {
@@ -943,9 +943,9 @@ class ssh (
     }
   }
 
-  case type3x($ssh_key_import) {
+  case ssh::type3x($ssh_key_import) {
     'string': {
-      validate_re($ssh_key_import, '^(true|false)$', "ssh::ssh_key_import may be either 'true' or 'false' and is set to <${ssh_key_import}>.")
+      ssh::validate_re($ssh_key_import, '^(true|false)$', "ssh::ssh_key_import may be either 'true' or 'false' and is set to <${ssh_key_import}>.")
       $ssh_key_import_real = str2bool($ssh_key_import)
     }
     'boolean': {
@@ -955,9 +955,9 @@ class ssh (
       fail('ssh::ssh_key_import type must be true or false.')
     }
   }
-  validate_bool($ssh_key_import_real)
+  ssh::validate_bool($ssh_key_import_real)
 
-  case type3x($ssh_config_sendenv_xmodifiers) {
+  case ssh::type3x($ssh_config_sendenv_xmodifiers) {
     'string': {
       $ssh_config_sendenv_xmodifiers_real = str2bool($ssh_config_sendenv_xmodifiers)
     }
@@ -993,70 +993,70 @@ class ssh (
     }
   }
 
-  validate_absolute_path($ssh_config_global_known_hosts_file)
+  ssh::validate_absolute_path($ssh_config_global_known_hosts_file)
   $ssh_config_global_known_hosts_file_real = any2array($ssh_config_global_known_hosts_file)
 
   if $ssh_config_global_known_hosts_list != undef {
-    validate_array($ssh_config_global_known_hosts_list)
-    validate_absolute_path($ssh_config_global_known_hosts_list)
+    ssh::validate_array($ssh_config_global_known_hosts_list)
+    ssh::validate_absolute_path($ssh_config_global_known_hosts_list)
     $ssh_config_global_known_hosts_list_real = concat($ssh_config_global_known_hosts_file_real, $ssh_config_global_known_hosts_list)
   } else {
     $ssh_config_global_known_hosts_list_real = $ssh_config_global_known_hosts_file_real
   }
 
   if $ssh_config_user_known_hosts_file != undef {
-    validate_array($ssh_config_user_known_hosts_file)
+    ssh::validate_array($ssh_config_user_known_hosts_file)
   }
 
-  validate_string($ssh_config_global_known_hosts_owner)
-  validate_string($ssh_config_global_known_hosts_group)
-  validate_re($ssh_config_global_known_hosts_mode, '^[0-7]{4}$',
+  ssh::validate_string($ssh_config_global_known_hosts_owner)
+  ssh::validate_string($ssh_config_global_known_hosts_group)
+  ssh::validate_re($ssh_config_global_known_hosts_mode, '^[0-7]{4}$',
     "ssh::ssh_config_global_known_hosts_mode must be a valid 4 digit mode in octal notation. Detected value is <${ssh_config_global_known_hosts_mode}>.")
 
-  if type3x($purge_keys) == 'string' {
+  if ssh::type3x($purge_keys) == 'string' {
     $purge_keys_real = str2bool($purge_keys)
   } else {
     $purge_keys_real = $purge_keys
   }
-  validate_bool($purge_keys_real)
+  ssh::validate_bool($purge_keys_real)
 
-  if type3x($manage_service) == 'string' {
+  if ssh::type3x($manage_service) == 'string' {
     $manage_service_real = str2bool($manage_service)
   } else {
     $manage_service_real = $manage_service
   }
-  validate_bool($manage_service_real)
+  ssh::validate_bool($manage_service_real)
 
-  if type3x($service_enable) == 'string' {
+  if ssh::type3x($service_enable) == 'string' {
     $service_enable_real = str2bool($service_enable)
   } else {
     $service_enable_real = $service_enable
   }
-  validate_bool($service_enable_real)
+  ssh::validate_bool($service_enable_real)
 
-  if type3x($service_hasrestart) == 'string' {
+  if ssh::type3x($service_hasrestart) == 'string' {
     $service_hasrestart_real = str2bool($service_hasrestart)
   } else {
     $service_hasrestart_real = $service_hasrestart
   }
-  validate_bool($service_hasrestart_real)
+  ssh::validate_bool($service_hasrestart_real)
 
-  if type3x($manage_root_ssh_config) == 'string' {
+  if ssh::type3x($manage_root_ssh_config) == 'string' {
     $manage_root_ssh_config_real = str2bool($manage_root_ssh_config)
   } else {
     $manage_root_ssh_config_real = $manage_root_ssh_config
   }
-  validate_bool($manage_root_ssh_config_real)
+  ssh::validate_bool($manage_root_ssh_config_real)
 
   #ssh_config template
-  validate_string($ssh_config_template)
+  ssh::validate_string($ssh_config_template)
 
   #sshd_config template
-  validate_string($sshd_config_template)
+  ssh::validate_string($sshd_config_template)
 
   #loglevel
   $supported_loglevel_vals=['QUIET', 'FATAL', 'ERROR', 'INFO', 'VERBOSE']
-  validate_re($sshd_config_loglevel, $supported_loglevel_vals)
+  ssh::validate_re($sshd_config_loglevel, $supported_loglevel_vals)
 
   #enable hiera merging for groups, users, and config_entries
   if $hiera_merge_real == true {
@@ -1072,63 +1072,63 @@ class ssh (
     $sshd_config_denyusers_real   = $sshd_config_denyusers
     $config_entries_real          = $config_entries
   }
-  validate_hash($config_entries_real)
+  ssh::validate_hash($config_entries_real)
 
   if $sshd_config_denyusers_real != [] {
-    validate_array($sshd_config_denyusers_real)
+    ssh::validate_array($sshd_config_denyusers_real)
   }
 
   if $sshd_config_denygroups_real != [] {
-    validate_array($sshd_config_denygroups_real)
+    ssh::validate_array($sshd_config_denygroups_real)
   }
 
   if $sshd_config_allowusers_real != [] {
-    validate_array($sshd_config_allowusers_real)
+    ssh::validate_array($sshd_config_allowusers_real)
   }
 
   if $sshd_config_allowgroups_real != [] {
-    validate_array($sshd_config_allowgroups_real)
+    ssh::validate_array($sshd_config_allowgroups_real)
   }
 
 
   if $sshd_config_tcp_keepalive_real != undef {
-    validate_re($sshd_config_tcp_keepalive_real, '^(yes|no)$', "ssh::sshd_config_tcp_keepalive may be either 'yes', 'no' or 'unset' and is set to <${sshd_config_tcp_keepalive_real}>.")
+    ssh::validate_re($sshd_config_tcp_keepalive_real, '^(yes|no)$', "ssh::sshd_config_tcp_keepalive may be either 'yes', 'no' or 'unset' and is set to <${sshd_config_tcp_keepalive_real}>.")
   }
 
   if $sshd_config_use_privilege_separation != undef {
-    validate_re($sshd_config_use_privilege_separation, '^(yes|no|sandbox)$', "ssh::sshd_config_use_privilege_separation may be either 'yes', 'no' or 'sandbox' and is set to <${sshd_config_use_privilege_separation}>.")
+    ssh::validate_re($sshd_config_use_privilege_separation, '^(yes|no|sandbox)$', "ssh::sshd_config_use_privilege_separation may be either 'yes', 'no' or 'sandbox' and is set to <${sshd_config_use_privilege_separation}>.")
   }
 
   if $sshd_config_permittunnel_real != undef {
-    validate_re($sshd_config_permittunnel_real, '^(yes|no|point-to-point|ethernet|unset)$', "ssh::sshd_config_permittunnel may be either 'yes', 'point-to-point', 'ethernet', 'no' or 'unset' and is set to <${sshd_config_permittunnel_real}>.")
+    ssh::validate_re($sshd_config_permittunnel_real, '^(yes|no|point-to-point|ethernet|unset)$', "ssh::sshd_config_permittunnel may be either 'yes', 'point-to-point', 'ethernet', 'no' or 'unset' and is set to <${sshd_config_permittunnel_real}>.")
   }
 
   if $sshd_config_hostcertificate_real != undef {
-    if is_array($sshd_config_hostcertificate_real) {
-      validate_array($sshd_config_hostcertificate_real)
+    if ssh::is_array($sshd_config_hostcertificate_real) {
+      ssh::validate_array($sshd_config_hostcertificate_real)
     }
-    validate_absolute_path($sshd_config_hostcertificate_real)
+    ssh::validate_absolute_path($sshd_config_hostcertificate_real)
   }
 
   if $sshd_config_trustedusercakeys_real != undef {
     # TrustedUserCAKeys may be a path to the keys or 'none'
     if $sshd_config_trustedusercakeys_real != 'none' {
-      validate_absolute_path($sshd_config_trustedusercakeys_real)
+      ssh::validate_absolute_path($sshd_config_trustedusercakeys_real)
     }
   }
   if $sshd_config_key_revocation_list_real != undef {
     # RevokedKeys may be a path to the key revocation list or 'none'
     if $sshd_config_key_revocation_list_real != 'none' {
-      validate_absolute_path($sshd_config_key_revocation_list)
+      ssh::validate_absolute_path($sshd_config_key_revocation_list)
     }
   }
 
   if $sshd_config_authorized_principals_file_real != undef {
-    validate_string($sshd_config_authorized_principals_file_real)
+    ssh::validate_string($sshd_config_authorized_principals_file_real)
   }
 
   if $sshd_config_allowagentforwarding != undef {
-    validate_re($sshd_config_allowagentforwarding, '^(yes|no)$', "ssh::sshd_config_allowagentforwarding may be either 'yes' or 'no' and is set to <${sshd_config_allowagentforwarding}>.")
+    ssh::validate_re($sshd_config_allowagentforwarding, '^(yes|no)$', "ssh::sshd_config_allowagentforwarding may be either 'yes' or 'no' and is set to <${sshd_config_allowagentforwarding}>.")
   }
 
   package { $packages_real:
@@ -1261,7 +1261,7 @@ class ssh (
       $keys_real = $keys
       notice('Future versions of the ssh module will default ssh::hiera_merge_real to true')
     }
-    validate_hash($keys_real)
+    ssh::validate_hash($keys_real)
     create_resources('ssh_authorized_key', $keys_real)
   }
 
@@ -1269,7 +1269,7 @@ class ssh (
     if $::osfamily == 'Solaris' {
       fail("ssh::sshd_addressfamily is not supported on Solaris and is set to <${sshd_addressfamily}>.")
     } else {
-      validate_re($sshd_addressfamily_real, '^(any|inet|inet6)$',
+      ssh::validate_re($sshd_addressfamily_real, '^(any|inet|inet6)$',
         "ssh::sshd_addressfamily can be undef, 'any', 'inet' or 'inet6' and is set to ${sshd_addressfamily_real}.")
     }
   }
