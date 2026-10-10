@@ -126,7 +126,7 @@ class ssh (
   $sshd_config_include                        = 'USE_DEFAULTS',
 ) {
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'RedHat': {
       $default_packages                        = ['openssh-server',
                                                   'openssh-clients']
@@ -147,7 +147,7 @@ class ssh (
       $default_sshd_gssapicleanupcredentials   = 'yes'
       $default_sshd_acceptenv                  = true
       $default_service_hasstatus               = true
-      if versioncmp($::operatingsystemrelease, '7.4') < 0 {
+      if versioncmp($facts['os']['release']['full'], '7.4') < 0 {
         $default_sshd_config_serverkeybits = '1024'
       } else {
         $default_sshd_config_serverkeybits = undef
@@ -182,9 +182,9 @@ class ssh (
       $default_sshd_config_tcp_keepalive       = 'yes'
       $default_sshd_config_permittunnel        = 'no'
       $default_sshd_config_include             = undef
-      case $::architecture {
+      case $facts['os']['architecture'] {
         'x86_64': {
-          if ($::operatingsystem == 'SLES') and ($::operatingsystemrelease =~ /^12\./) {
+          if ($facts['os']['name'] == 'SLES') and ($facts['os']['release']['full'] =~ /^12\./) {
             $default_sshd_config_subsystem_sftp = '/usr/lib/ssh/sftp-server'
           } else {
             $default_sshd_config_subsystem_sftp = '/usr/lib64/ssh/sftp-server'
@@ -194,7 +194,7 @@ class ssh (
           $default_sshd_config_subsystem_sftp = '/usr/lib/ssh/sftp-server'
       }
         default: {
-          fail("ssh supports architectures x86_64 and i386 for Suse. Detected architecture is <${::architecture}>.")
+          fail("ssh supports architectures x86_64 and i386 for Suse. Detected architecture is <${facts['os']['architecture']}>.")
         }
       }
     }
@@ -204,7 +204,7 @@ class ssh (
                                                   'openssh-client']
       $default_service_name                    = 'ssh'
 
-      case $::operatingsystemrelease {
+      case $facts['os']['release']['full'] {
         '16.04': {
           $default_sshd_config_hostkey = [
             '/etc/ssh/ssh_host_rsa_key',
@@ -429,7 +429,7 @@ class ssh (
           $default_service_hasstatus               = true
           $default_sshd_config_include             = undef
         }
-        default: { fail ("Operating System : ${::operatingsystemrelease} not supported") }
+        default: { fail ("Operating System : ${facts['os']['release']['full']} not supported") }
       }
     }
     'Solaris': {
@@ -488,14 +488,16 @@ class ssh (
       }
     }
     default: {
-      fail("ssh supports osfamilies RedHat, Suse, Debian and Solaris. Detected osfamily is <${::osfamily}>.")
+      fail("ssh supports osfamilies RedHat, Suse, Debian and Solaris. Detected osfamily is <${facts['os']['family']}>.")
     }
   }
 
   if "${::ssh_version}" =~ /^OpenSSH/  { # lint:ignore:only_variable_string
     $ssh_version_array = split($::ssh_version_numeric, '\.')
-    $ssh_version_maj_int = 0 + $ssh_version_array[0]
-    $ssh_version_min_int = 0 + $ssh_version_array[1]
+    # NIOBIUM (it#360): Integer() on the leading digits, not `0 + '9'`, which
+    # Puppet 8's strict mode rejects as String-to-Integer coercion.
+    $ssh_version_maj_int = Integer(regsubst($ssh_version_array[0], '^(\d+).*$', '\1'))
+    $ssh_version_min_int = Integer(regsubst($ssh_version_array[1], '^(\d+).*$', '\1'))
     if $ssh_version_maj_int > 5 {
       $default_ssh_config_use_roaming = 'no'
     } elsif $ssh_version_maj_int == 5 and $ssh_version_min_int >= 4 {
@@ -798,7 +800,9 @@ class ssh (
   case ssh::type3x($sshd_config_port) {
     'string': {
       ssh::validate_re($sshd_config_port, '^\d+$', "ssh::sshd_config_port must be a valid number and is set to <${sshd_config_port}>.")
-      $sshd_config_port_array = [ str2num($sshd_config_port) ]
+      # NIOBIUM (it#360): str2num() exists in no installed module; the regex
+      # above guarantees digits, so Integer() is the same conversion.
+      $sshd_config_port_array = [ Integer($sshd_config_port) ]
     }
     'array': {
       $sshd_config_port_array = $sshd_config_port
@@ -980,13 +984,13 @@ class ssh (
 
   case $ssh_key_type {
     'ssh-rsa','rsa': {
-      $key = $::sshrsakey
+      $key = $facts.dig('ssh', 'rsa', 'key')
     }
     'ssh-dsa','dsa': {
-      $key = $::sshdsakey
+      $key = $facts.dig('ssh', 'dsa', 'key')
     }
     'ecdsa-sha2-nistp256': {
-          $key = $::sshecdsakey
+          $key = $facts.dig('ssh', 'ecdsa', 'key')
     }
     default: {
       fail("ssh::ssh_key_type must be 'ecdsa-sha2-nistp256', 'ssh-rsa', 'rsa', 'ssh-dsa', or 'dsa' and is <${ssh_key_type}>.")
@@ -1214,15 +1218,18 @@ class ssh (
   }
 
   # If either IPv4 or IPv6 stack is not configured on the agent, the
-  # corresponding $::ipaddress(6)? fact is not present. So, we cannot assume
-  # these variables are defined. Getvar (Stdlib 4.13+, ruby 1.8.7+) handles
-  # this correctly.
-  if getvar('::ipaddress') and getvar('::ipaddress6') { $host_aliases = [$::hostname, $::ipaddress, $::ipaddress6] }
-  elsif getvar('::ipaddress6') { $host_aliases = [$::hostname, $::ipaddress6] }
-  else { $host_aliases = [$::hostname, $::ipaddress] }
+  # corresponding networking.ip(6)? fact is not present (undef).
+  # NIOBIUM (it#360): structured facts, not the legacy ipaddress/hostname/fqdn
+  # an openvox8 agent no longer sends.
+  $nb_ip       = $facts.dig('networking', 'ip')
+  $nb_ip6      = $facts.dig('networking', 'ip6')
+  $nb_hostname = $facts.dig('networking', 'hostname')
+  if $nb_ip and $nb_ip6 { $host_aliases = [$nb_hostname, $nb_ip, $nb_ip6] }
+  elsif $nb_ip6 { $host_aliases = [$nb_hostname, $nb_ip6] }
+  else { $host_aliases = [$nb_hostname, $nb_ip] }
 
   # export each node's ssh key
-  @@sshkey { $::fqdn :
+  @@sshkey { $facts['networking']['fqdn'] :
     ensure       => $ssh_key_ensure,
     host_aliases => $host_aliases,
     type         => $ssh_key_type,
@@ -1266,7 +1273,7 @@ class ssh (
   }
 
   if $sshd_addressfamily_real != undef {
-    if $::osfamily == 'Solaris' {
+    if $facts['os']['family'] == 'Solaris' {
       fail("ssh::sshd_addressfamily is not supported on Solaris and is set to <${sshd_addressfamily}>.")
     } else {
       ssh::validate_re($sshd_addressfamily_real, '^(any|inet|inet6)$',

@@ -62,6 +62,8 @@ the `+` costs nothing; git accepts it in a tag name.
   `.scanoss-curations.json`, which org automation added to `main` without checksum entries
 - `3.62.0+nb.4` — no stdlib functions that stdlib 9 removed: `functions/` reimplements the ten it
   used, and the 112 calls use them (NiobiumInc/it#360). No catalog change.
+- `3.62.0+nb.5` — runs under Puppet/OpenVox 8: structured facts instead of legacy ones, Integer()
+  instead of String arithmetic, no `str2num()` (NiobiumInc/it#360). No catalog change on Puppet 7.
 
 ## 2026-10-09: 26.04
 
@@ -79,8 +81,8 @@ called ten of them 112 times (`validate_re` 41, `validate_array` 19, `type3x` 14
 `validate_hash` 3, `validate_numeric` 1, `is_array` 1). Under stdlib 9.7.0 every Linux catalog
 failed at the first (`validate_absolute_path`, `init.pp:547`).
 
-`functions/*.pp` reimplements each as `ssh::<name>` with **stdlib 6.5's exact contract**, read
-from its source -- the lenient cases included: `validate_string` accepts undef, `is_integer` and
+`functions/*.pp` reimplements each as `ssh::<name>` with **stdlib 6.5's contract on every input this
+module can receive** (corrected in nb.5; see the exceptions below), read from its source -- the lenient cases included: `validate_string` accepts undef, `is_integer` and
 `type3x` treat a digit String (`'22'`) as an integer, `validate_numeric` accepts numeric Strings
 and arrays. The calls were renamed mechanically, nothing else in `manifests/` changed. Checked
 against stdlib 6.5's own functions over 25 inputs (digit/float/negative/leading-zero strings,
@@ -90,3 +92,30 @@ stdlib bump; `type3x` also no longer depends on Ruby's Bignum/Fixnum (gone in Ru
 
 Not in nb.4: the legacy facts and the String-to-Integer coercion that Puppet 8's strict mode
 rejects (`init.pp` ~497). Those are OpenVox 8 work for a separate release.
+
+Exceptions to the nb.4 contract (fork PR #7 review), none reachable with this module's inputs:
+
+| function | input | stdlib 6.5 | `ssh::` |
+|---|---|---|---|
+| `type3x` | decimal Strings past ~17 significant digits | `string` (its `to_f.to_s` round-trip fails) | `float` |
+| `validate_absolute_path` | a nested array (`[['/a','/b']]`) | fail | pass (it flattens) |
+| `validate_numeric` | a hex String (`'0x10'`) | pass | **fail** (decimal only) |
+
+## 2026-10-10: OpenVox 8 (nb.5)
+
+Measured with OpenVox 8.30 over every CI snapshot of the control repo (NiobiumInc/it#360, step 4).
+With strict mode on, this module was the only thing left failing:
+
+- **String-to-Integer coercion** at `init.pp:497–498`: `0 + $ssh_version_array[0]`, where the array
+  is `split($::ssh_version_numeric, '\.')` — Puppet 8's strict mode rejects adding a String to an
+  Integer. Now `Integer(regsubst(..., '^(\d+).*$', '\1'))`: the same value for the digit strings this
+  fact holds, and robust to a suffix like `6p1`.
+- **Legacy facts**, which an openvox8 agent no longer sends (and `strict_variables`, Puppet 8's
+  default, turns into an unknown-variable error): `$::osfamily`, `$::operatingsystem`,
+  `$::operatingsystemrelease`, `$::architecture`, `$::hostname`, `$::fqdn`, `$::ipaddress(6)` and
+  `$::ssh{rsa,dsa,ecdsa}key` → `$facts['os'][...]`, `$facts['networking'][...]` and
+  `$facts.dig('ssh', <type>, 'key')`. These are the same values on Puppet 7. Two were inside
+  `fail()` messages. Still top-level and kept: `root_home` (stdlib's fact), `ssh_version*` (this
+  module's), `kernelrelease`.
+- **`str2num()`** (the 'string' arm of `sshd_config_port`) named a function no installed module
+  defines; the regex before it guarantees digits, so it is `Integer()`.
